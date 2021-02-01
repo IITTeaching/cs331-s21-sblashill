@@ -22,7 +22,20 @@ def captured_output():
 
 # implement this function
 def is_perfect(n):
-    pass
+    fac = [1]
+    sum = 0
+    posFac = list(range(2,n))
+    for x in posFac:
+        if float(n/x).is_integer():
+            fac.append(x)
+    for y in fac:
+        sum += y
+    if n == 1:
+        return False
+    if sum == n:
+        return True
+    else:
+        return False
 
 # (3 points)
 def test1():

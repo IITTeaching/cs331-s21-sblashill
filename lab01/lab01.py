@@ -90,7 +90,35 @@ def test3():
 
 # implement this function
 def gen_pattern(chars):
-    pass
+    l = len(chars)
+    lg = len(chars)*2-1
+    lg1 =  (len(chars)*2-1)*2-1
+    tstr1 = ""
+    tstr2 = ""
+    asc = ""
+    tasc = ""
+    for y in range(lg):
+        tasc = ""
+        tstr1 = ""
+        tstr2 = ""
+        if y < l:
+            for x in range(y):
+                tstr1 += chars[l-y+x]
+                tstr2 += chars[l-x-1]
+            tasc = "".join((tstr2,chars[l-y-1],tstr1))
+            tasc = ".".join(tasc)
+        else:
+            for x in range(lg-y -1):
+                tstr1 += chars[l-lg+y+x+1]
+                tstr2 += chars[l-x-1]
+            tasc = "".join((tstr2,chars[l+y-lg],tstr1))
+            tasc = ".".join(tasc)
+        while len(tasc) < lg1:
+            tasc = "".join((".",tasc))
+            tasc = "".join((tasc,"."))
+        asc += tasc
+        asc += "\n"
+    print(asc)
 
 def test4():
     tc = unittest.TestCase()
@@ -171,10 +199,10 @@ p.o.n.m.l.k.j.i.h.g.f.e.d.c.b.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p
 # RUN ALL TESTS
 #################################################################################
 def main():
-    test1()
-    test2()
-    test3()
-   ## test4()
+   ## test1()
+   ## test2()
+   ## test3()
+    test4()
 
 if __name__ == '__main__':
     main()

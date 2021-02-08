@@ -34,7 +34,17 @@ ROMEO_SOLILOQUY = """
 # Implement this function
 def compute_ngrams(toks, n=2):
     """Returns an n-gram dictionary based on the provided list of tokens."""
-    pass
+    output = dict()
+    for t in range(len(toks)):
+        key = toks[t]
+        value = tuple(toks[t+1:t+n:1])
+        if len(value) < n - 1:
+            return output
+        if key in output:
+            output[key].append(value)
+        else:
+            output[key] = [value]
+    
 
 def test1():
     test1_1()
@@ -111,7 +121,7 @@ def test2():
 
 def main():
     test1()
-    test2()
+   # test2()
 
 if __name__ == '__main__':
     main()

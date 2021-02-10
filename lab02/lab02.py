@@ -103,7 +103,19 @@ def test1_2():
 ################################################################################
 # Implement this function
 def gen_passage(ngram_dict, length=100):
-    pass
+    # add the key to the output (kinda cringe)
+    dict_keys = sorted(ngram_dict.keys())
+    output = list()
+    key = str(random.choice(dict_keys))
+    while len(output) < length:
+        y = random.choice(ngram_dict[key])
+        for m in range(len(y)):
+            output.append("".join(y[m:m+1]))
+        key = "".join(y[len(y)-1:len(y)])
+        if key not in dict_keys:
+            key = str(random.choice(dict_keys))
+    return(str(" ".join(output)))
+    
 
 # 50 Points
 def test2():
@@ -121,7 +133,7 @@ def test2():
 
 def main():
     test1()
-   # test2()
+    test2()
 
 if __name__ == '__main__':
     main()

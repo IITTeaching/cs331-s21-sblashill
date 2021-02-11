@@ -103,10 +103,11 @@ def test1_2():
 ################################################################################
 # Implement this function
 def gen_passage(ngram_dict, length=100):
-    # add the key to the output (kinda cringe)
+    
     dict_keys = sorted(ngram_dict.keys())
     output = list()
     key = str(random.choice(dict_keys))
+    output.append(key)
     while len(output) < length:
         y = random.choice(ngram_dict[key])
         for m in range(len(y)):
@@ -114,6 +115,7 @@ def gen_passage(ngram_dict, length=100):
         key = "".join(y[len(y)-1:len(y)])
         if key not in dict_keys:
             key = str(random.choice(dict_keys))
+            output.append(key)
     return(str(" ".join(output)))
     
 

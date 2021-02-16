@@ -17,7 +17,15 @@ def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
     right element, 1 if the left is larger than the right, and 0 if the two
     elements are equal.
     """
-    pass
+    output = [lst.pop()]
+    for a in lst:
+        for i,b in enumerate(output):
+            if compare(a,b) == -1:
+                i -= 1
+                break  
+        i += 1
+        output.insert(i,a)
+    return output
 
 def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     """
@@ -27,7 +35,20 @@ def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     position of the first (leftmost) match for elem in lst. If elem does not
     exist in lst, then return -1.
     """
-    pass
+    x = int()
+    low = 0
+    high = len(lst) - 1
+    while low <= high:
+        x = (high + low) // 2
+        if compare(lst[x], elem) == -1:
+            
+            low = x + 1
+        elif compare(lst[x],elem) == 1:
+            high = x - 1
+        else:
+            print(x)
+            return x
+    return -1
 
 class Student():
     """Custom class to test generic sorting and searching."""
@@ -216,8 +237,8 @@ def test3_2():
 #################################################################################
 def main():
     test1()
-    test2()
-    test3()
+    #test2()
+    #test3()
 
 if __name__ == '__main__':
     main()

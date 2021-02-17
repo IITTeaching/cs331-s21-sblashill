@@ -41,12 +41,10 @@ def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     while low <= high:
         x = (high + low) // 2
         if compare(lst[x], elem) == -1:
-            
             low = x + 1
         elif compare(lst[x],elem) == 1:
             high = x - 1
         else:
-            print(x)
             return x
     return -1
 

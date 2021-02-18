@@ -131,7 +131,10 @@ class PrefixSearcher():
         Initializes a prefix searcher using a document and a maximum
         search string length k.
         """
-        pass
+        output = list()
+        for x in range(len(document)-1+k):
+            output.append(document[x:x+k])
+        self = output
 
     def search(self, q):
         """

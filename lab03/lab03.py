@@ -132,6 +132,8 @@ class PrefixSearcher():
         Initializes a prefix searcher using a document and a maximum
         search string length k.
         """
+        self.doc = document
+        self.max = k
         output = list()
         for x in range(len(document)):
             output.append(document[x:x+k])
@@ -143,7 +145,9 @@ class PrefixSearcher():
         length up to n). If q is longer than n, then raise an
         Exception.
         """
-        
+        if len(q) > len(self.doc): raise Exception('q longer than n')
+        cmpfcm = lambda x,y: 0 if (x[:len(q)] == y[:len(q)]) else (-1 if (x[:len(q)] < y[:len(q)]) else 1)
+        mysort(lst=self.outlist, compare=cmpfcm)
         y = 0
         for x in range(len(self.outlist)):
             if self.outlist[x] == q:
@@ -192,20 +196,30 @@ class SuffixArray():
         """
         Creates a suffix array for document (a string).
         """
-        pass
+        self.document = document
+        self.suffixes = [document[i:] for i in range(len(document))]
+        cmpFcm = lambda x,y: 0 if (x[1] == y[1]) else (-1 if (x[1] < y[1]) else 1)
+        temp = mysort(lst=list(enumerate(self.suffixes)), compare=cmpFcm)
+        self.sArray = [x for x,y in temp]
 
 
     def positions(self, searchstr: str):
         """
         Returns all the positions of searchstr in the documented indexed by the suffix array.
         """
-        pass
+        cmpFcm = lambda x,y: 0 if self.document[x:x+len(searchstr)] == y else (-1 if self.document[x:x+len(searchstr)] < y else 1)
+        start = mybinsearch(lst=self.sArray,elem=searchstr, compare=cmpFcm)-1
+        return [start]
 
     def contains(self, searchstr: str):
         """
         Returns true of searchstr is coontained in document.
         """
-        pass
+        cmpFcm = lambda x,y: 0 if self.document[x:x+len(searchstr)] == y else (-1 if self.document[x:x+len(searchstr)] < y else 1)
+        if mybinsearch(lst=self.sArray,elem=searchstr, compare=cmpFcm) >= 0: 
+            return True
+        else: 
+            return False
 
 # 40 Points
 def test3():
@@ -244,9 +258,9 @@ def test3_2():
 # TEST CASES
 #################################################################################
 def main():
-    #test1()
+    test1()
     test2()
-    #test3()
+    test3()
 
 if __name__ == '__main__':
     main()

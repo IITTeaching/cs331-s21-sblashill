@@ -134,11 +134,11 @@ class ArrayList:
     def append(self, value):
         """Appends value to the end of this list."""
         ### BEGIN SOLUTION
-        newa = ConstrainedList(self.len + 1)
-        for i in range(self.len):
+        newa = ConstrainedList(len(self) + 1)
+        for i in range(len(self)):
             newa[i] = self[i]
         self.data = newa
-        self.data[self.len] = value
+        self.data[len(self)-1] = value
         self.len += 1
         ### END SOLUTION
 
@@ -168,7 +168,7 @@ class ArrayList:
         by default)."""
         ### BEGIN SOLUTION
         temp = self[idx]
-        self.__delitem__(idx)
+        del self[idx]
         return temp
         ### END SOLUTION
 
@@ -287,16 +287,18 @@ class ArrayList:
         ### END SOLUTION
 
     def clear(self):
-        self.data = ConstrainedList() # don't change this!
+        self.data = ConstrainedList(0) # don't change this!
         self.len = 0 # don't change this!
 
     def copy(self):
         """Returns a new ArrayList instance (with a separate data store), that
         contains the same values as this list."""
         ### BEGIN SOLUTION
+        if len(self) == 0:
+            return ArrayList()
         new = ArrayList()
-        new.data = ConstrainedList.create(self)
-        new.len = self.len
+        new.data = ConstrainedList.create(self.data)
+        new.len = len(self)
         return new
         ### END SOLUTION
 
@@ -525,7 +527,7 @@ def test_case_6():
     tc.assertEqual(data + data2, arrayListToList(lst3))
 
     lst.clear()
-    #tc.assertEqual([], arrayListToList(lst))
+    tc.assertEqual([], arrayListToList(lst))
     
     lst.data = ConstrainedList.create([random.randrange(1000) for _ in range(50)])
     lst2 = lst.copy()
@@ -574,12 +576,12 @@ def test_log(s):
 ########################################
 # All tests
 def main():
-    #test_case_1()
-    #test_case_2()
-    #test_case_3()
-    #test_case_4()
-    #test_case_5()
-    #test_case_6()
+    test_case_1()
+    test_case_2()
+    test_case_3()
+    test_case_4()
+    test_case_5()
+    test_case_6()
     test_case_7()
 
 if __name__ == '__main__':

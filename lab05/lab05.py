@@ -82,7 +82,7 @@ class LinkedList:
         """retrieves the value at the current cursor position"""
         assert self.cursor is not self.head
         ### BEGIN SOLUTION
-        self.cursor.val
+        return self.cursor.val
         ### END SOLUTION
 
     def cursor_set(self, idx):
@@ -103,10 +103,16 @@ class LinkedList:
         node as needed"""
         assert len(self) > 0
         ### BEGIN SOLUTION
-        offset = self._normalize_idx(offset)
+        while True:
+            if offset < 0:
+                offset += self.length
+            else:
+                break
         n = self.cursor
-        for i in range(0,offset)
+        for i in range(0,offset):
             n = n.next
+            if n == self.head:
+                n = n.next
         self.cursor = n
         ### END SOLUTION
 
@@ -129,7 +135,7 @@ class LinkedList:
         ### BEGIN SOLUTION
         n = self.cursor
         for i in range(self.length):
-            if self[i] == self.cursor.val
+            if self[i] == self.cursor.val:
                 idx = i
                 break
         n.prior.next = n.next

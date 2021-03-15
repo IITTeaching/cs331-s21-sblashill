@@ -119,6 +119,7 @@ class LinkedList:
         n.next.prior = newn
         n.next = newn
         self.cursor = newn
+        self.length += 1
         ### END SOLUTION
 
     def cursor_delete(self):

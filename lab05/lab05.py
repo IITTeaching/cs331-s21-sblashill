@@ -127,6 +127,15 @@ class LinkedList:
         following node"""
         assert self.cursor is not self.head and len(self) > 0
         ### BEGIN SOLUTION
+        n = self.cursor
+        for i in range(self.length):
+            if self[i] == self.cursor.val
+                idx = i
+                break
+        n.prior.next = n.next
+        n.next.prior = n.prior
+        self.cursor = n.next
+        del self[idx]
         ### END SOLUTION
 
     ### stringification ###

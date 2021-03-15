@@ -82,11 +82,17 @@ class LinkedList:
         """retrieves the value at the current cursor position"""
         assert self.cursor is not self.head
         ### BEGIN SOLUTION
+        self.cursor.val
         ### END SOLUTION
 
     def cursor_set(self, idx):
         """sets the cursor to the node at the provided index"""
         ### BEGIN SOLUTION
+        idx = self._normalize_idx(idx)
+        n = self.head.next
+        for i in range(0,idx):
+            n = n.next
+        self.cursor = n
         ### END SOLUTION
 
     def cursor_move(self, offset):
@@ -97,12 +103,22 @@ class LinkedList:
         node as needed"""
         assert len(self) > 0
         ### BEGIN SOLUTION
+        offset = self._normalize_idx(offset)
+        n = self.cursor
+        for i in range(0,offset)
+            n = n.next
+        self.cursor = n
         ### END SOLUTION
 
     def cursor_insert(self, value):
         """inserts a new value after the cursor and sets the cursor to the
         new node"""
         ### BEGIN SOLUTION
+        n = self.cursor
+        newn = self.Node(value, prior = n, next = n.next)
+        n.next.prior = newn
+        n.next = newn
+        self.cursor = newn
         ### END SOLUTION
 
     def cursor_delete(self):

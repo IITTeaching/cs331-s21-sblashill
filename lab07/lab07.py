@@ -14,18 +14,53 @@ class ExtensibleHashTable:
 
     def find_bucket(self, key):
         # BEGIN_SOLUTION
+        idx = hash(key) % self.n_buckets
+
+        for bucket in range(idx,self.n_buckets):
+            if not self.buckets[bucket] or self.buckets[bucket][0] == key:
+                return bucket
+
+        for bucket in range(idx):
+            if not self.buckets[bucket] or self.buckets[bucket][0] == key:
+                return bucket
+
+        raise KeyError
         # END_SOLUTION
 
     def __getitem__(self,  key):
         # BEGIN_SOLUTION
+        idx = self.find_bucket(key)
+
+        if self.buckets[idx] == None:
+            raise KeyError
+
+        return self.buckets[idx][1]
         # END_SOLUTION
 
     def __setitem__(self, key, value):
         # BEGIN_SOLUTION
+        if self.nitems >= self.n_buckets * self.fillfactor:
+            ndata = [None] * self.n_buckets * 2
+            self.n_buckets = self.n_buckets * 2
+            obucket = self.buckets
+            self.buckets = ndata
+            for bucket in obucket:
+                if bucket == None:
+                    pass
+                else:
+                    idx = self.find_bucket(bucket[0])
+                    self.buckets[idx] = (bucket[0], bucket[1])
+
+        idx = self.find_bucket(key)
+        self.buckets[idx] = (key, value)
+        self.nitems += 1
         # END_SOLUTION
 
     def __delitem__(self, key):
         # BEGIN SOLUTION
+        idx = self.find_bucket(key)
+        del self.buckets[idx]
+        self.nitems -= 1
         # END SOLUTION
 
     def __contains__(self, key):
@@ -43,6 +78,11 @@ class ExtensibleHashTable:
 
     def __iter__(self):
         ### BEGIN SOLUTION
+        for x in range(self.n_buckets):
+            if self.buckets[x] == None:
+                pass
+            else:
+                yield self.buckets[x][0]
         ### END SOLUTION
 
     def keys(self):
@@ -50,10 +90,15 @@ class ExtensibleHashTable:
 
     def values(self):
         ### BEGIN SOLUTION
+        for x in self:
+            yield self[x]
         ### END SOLUTION
 
     def items(self):
         ### BEGIN SOLUTION
+        for x in self:
+            y = self.find_bucket(x)
+            yield self.buckets[y]
         ### END SOLUTION
 
     def __str__(self):

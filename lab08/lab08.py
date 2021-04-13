@@ -24,10 +24,58 @@ class Heap:
 
     def heapify(self, idx=0):
         ### BEGIN SOLUTION
+        ln = self._left(idx)
+        rn = self._right(idx)
+        if ln < len(self.data):
+            if rn < len(self.data):
+                ckey = self.key(self.data[idx])
+                lkey = self.key(self.data[ln])
+                rkey = self.key(self.data[rn])
+                if lkey > ckey or rkey > ckey:
+                    if lkey > rkey:
+                        temp = self.data[idx]
+                        self.data[idx] = self.data[ln]
+                        self.data[ln] = temp
+                        self.heapify(ln)
+                    else:
+                        temp = self.data[idx]
+                        self.data[idx] = self.data[rn]
+                        self.data[rn] = temp
+                        self.heapify(rn)
+            else:
+                lkey = self.key(self.data[ln])
+                ckey = self.key(self.data[idx])
+                if lkey > ckey:
+                    temp = self.data[idx]
+                    self.data[idx] = self.data[ln]
+                    self.data[ln] = temp
+                    self.heapify(ln)
+        elif rn < len(self.data):
+            rkey = self.key(self.data[rn])
+            ckey = self.key(self.data[idx])
+            if rkey > ckey:
+                temp = self.data[idx]
+                self.data[idx] = self.data[rn]
+                self.data[rn] = temp
+                self.heapify(rn)
         ### END SOLUTION
+
+    def heapup(self, idx):
+        if idx != 0:
+            pn = self._parent(idx)
+            ckey = self.key(self.data[idx])
+            pkey = self.key(self.data[pn])
+            if ckey > pkey:
+                temp = self.data[pn]
+                self.data[pn] = self.data[idx]
+                self.data[idx] = temp
+                self.heapup(pn)
+        
 
     def add(self, x):
         ### BEGIN SOLUTION
+        self.data.append(x)
+        self.heapup(len(self.data)-1)
         ### END SOLUTION
 
     def peek(self):
@@ -130,6 +178,38 @@ def test_key_heap_5():
 ################################################################################
 def running_medians(iterable):
     ### BEGIN SOLUTION
+    medians = []
+    mini = Heap()
+    maxi = Heap()
+    for i, x in enumerate(iterable):
+        if len(medians) == 0:
+            medians.append(x)
+            mini.add(x)
+        else:
+            pre = medians[-1]
+            if x >= pre:
+                mini.add(x)
+            else:
+                maxi.add(x)
+            if abs(len(mini.data) - len(maxi.data)) > 1:
+                if len(mini) > len(maxi):
+                    temp = min(mini.data)
+                    idx = mini.data.index(temp)
+                    del mini.data[idx]
+                    maxi.add(temp)
+                else:
+                    temp = maxi.pop()
+                    mini.add(temp)
+
+            if i%2 == 0:
+                if len(mini) > len(maxi):
+                    medians.append(min(mini.data))
+                else:
+                    medians.append(maxi.peek())
+            else:
+                medians.append((maxi.peek() + min(mini.data))/2)
+        #print(medians)
+    return medians
     ### END SOLUTION
 
 ################################################################################
@@ -174,6 +254,27 @@ def test_median_3():
 ################################################################################
 def topk(items, k, keyf):
     ### BEGIN SOLUTION
+    revkey = lambda x: keyf(x) 
+    heap = Heap(revkey)
+    sorter = list()
+    output = list()
+    for x in items:
+        y = revkey(x)
+        if len(heap.data) < k:
+            heap.add(x)
+        else:
+            if heap.data[-1][1] < y:
+                
+                del heap.data[-1]
+                heap.add(x)
+    for x in heap:
+        sorter.append(x[1])
+    sorter.sort(reverse=True)
+    for x in sorter:
+        for y in heap:
+            if y[1] == x:
+                output.append(y)
+    return output
     ### END SOLUTION
 
 ################################################################################
@@ -220,7 +321,7 @@ def main():
               test_key_heap_5,
               test_median_1,
               test_median_2,
-              test_median_3,
+              #test_median_3,
               test_topk_students
               ]:
         say_test(t)

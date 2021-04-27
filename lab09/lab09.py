@@ -1,3 +1,5 @@
+#changes
+
 from unittest import TestCase
 import random
 
@@ -75,48 +77,135 @@ class HBStree:
         from creating a new version.
         """
         # BEGIN SOLUTION
-
         if key in self:
             pass
-        elif len(self.root_versions) == 0:
+        elif len(self.root_versions) == 1:
             self.root_versions.append(self.INode(key,None,None))
         else:
-
             path = []
             cur = self.root_versions[-1]
 
             while True:
-
+                
                 if cur == None:
                     pre = self.INode(key,None,None)
                     break
-                elif key < cur.val():
-                    stack.append((cur, True))
-                    cur = cur.left()
+                elif key < cur.val:
+                    path.append((cur, True))
+                    cur = cur.left
                 else:
-                    stack.append((cur, False))
-                    cur = cur.left()
+                    path.append((cur, False))
+                    cur = cur.right
             
             for x in range(len(path) - 1,-1, -1):
+                
                 cur = path[x]
                 if x == 0:
                     if cur[1] == True:
-                        self.root_versions.append(self.INode((cur[0].val(),pre,cur[0].right())))
+                        self.root_versions.append(self.INode(cur[0].val,pre,cur[0].right))
                     else:
-                        self.root_versions.append(self.INode((cur[0].val(),cur[0].left(),pre)))
+                        self.root_versions.append(self.INode(cur[0].val,cur[0].left,pre))
                 else:
                     if cur[1] == True:
-                        self.INode((cur[0].val(),pre,cur[0].right()))
+                        pre = self.INode(cur[0].val,pre,cur[0].right)
                     else:
-                        self.INode((cur[0].val(),cur[0].left(),pre))
-                pre = cur[0]
+                        pre = self.INode(cur[0].val,cur[0].left,pre)
+                
 
         # END SOLUTION
 
     def delete(self,key):
         """Delete key from the tree, creating a new version of the tree. If key does not exist in the current version of the tree, then do nothing and refrain from creating a new version."""
         # BEGIN SOLUTION
-        
+        if key not in self:
+            pass
+        else:
+            
+            path = []
+            cur = self.root_versions[-1]
+
+            while True:
+                
+                if cur.val == key:
+                    pre = None
+                    dele = cur
+                    break
+                elif key < cur.val:
+                    path.append((cur, True))
+                    cur = cur.left
+                else:
+                    path.append((cur, False))
+                    cur = cur.right
+            
+            if dele.right and dele.left:
+                cur = dele.left
+                while True:
+                    if cur.right:
+                        cur = cur.right
+                    else:
+                        break
+                #########
+                
+                path1 = []
+                m = cur.val
+                cur = dele.left
+                
+                while True:
+                    
+                    if cur.val == m:
+                        pre = None
+                        dele1 = cur
+                        break
+                    elif m < cur.val:
+                        path1.append((cur, True))
+                        cur = cur.left
+                    else:
+                        path1.append((cur, False))
+                        cur = cur.right
+                if dele.left:
+                    pre = dele.left
+                if len(path1) == 0:
+                    newl = None
+                else:
+                    for x in range(len(path1) - 1,-1, -1):
+                    
+                        cur = path1[x]
+                        if x == 0:
+                            if cur[1] == True:
+                                newl = (self.INode(cur[0].val,pre,cur[0].right))
+                            else:
+                                newl = (self.INode(cur[0].val,cur[0].left,pre))
+                        else:
+                            if cur[1] == True:
+                                pre = self.INode(cur[0].val,pre,cur[0].right)
+                            else:
+                                pre = self.INode(cur[0].val,cur[0].left,pre)
+                #######
+                pre = self.INode(m, newl, dele.right)
+            elif dele.left:
+                pre = dele.left
+            elif dele.right:
+                pre = dele.right
+
+            if len(path) == 0:
+                self.root_versions.append(pre)
+            else:
+                for x in range(len(path) - 1,-1, -1):
+                    
+                    cur = path[x]
+                    if x == 0:
+                        if cur[1] == True:
+                            
+                            self.root_versions.append(self.INode(cur[0].val,pre,cur[0].right))
+                        else:
+                            
+                            self.root_versions.append(self.INode(cur[0].val,cur[0].left,pre))
+                    else:
+                        if cur[1] == True:
+                            pre = self.INode(cur[0].val,pre,cur[0].right)
+                        else:
+                            pre = self.INode(cur[0].val,cur[0].left,pre)
+
         # END SOLUTION
 
     @staticmethod
@@ -190,16 +279,19 @@ class HBStree:
         # BEGIN SOLUTION
         stack = []
         cur = self.root_versions[len(self.root_versions) - 1 - timetravel]
-        while True:
-            if cur is not None:
-                stack.append(cur)
-                cur = cur.left()
-            elif stack:
-                current = stack.pop()
-                yield (cur.val())
-                current = current.right()
-            else:
-                break
+        if cur == None:
+            pass
+        else:
+            while True:
+                if cur is not None:
+                    stack.append(cur)
+                    cur = cur.left
+                elif stack:
+                    cur = stack.pop()
+                    yield (cur.val)
+                    cur = cur.right
+                else:
+                    break
         # END SOLUTION
 
     @staticmethod
@@ -384,7 +476,8 @@ def main():
               test_lookup,
               test_delete_1,
               test_delete_2,
-              test_corner_cases]:
+              test_corner_cases
+              ]:
         say_test(t)
         t()
         say_success()

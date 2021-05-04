@@ -7,6 +7,7 @@ class AVLTree:
             self.val = val
             self.left = left
             self.right = right
+            self.bf = 0
 
         def rotate_right(self):
             n = self.left
@@ -15,6 +16,9 @@ class AVLTree:
 
         def rotate_left(self):
             ### BEGIN SOLUTION
+            n = self.right
+            self.val, n.val = n.val, self.val
+            self.right, n.right, self.left, n.left = n.right, n.left, n, self.left
             ### END SOLUTION
 
         @staticmethod
@@ -29,20 +33,160 @@ class AVLTree:
         self.root = None
 
     @staticmethod
-    def rebalance(t):
+    def helpdel(t):
         ### BEGIN SOLUTION
+        path = []
+        if t.bl == -1:
+            cur = t.left
+            if cur.right:         
+                while True:
+                    if cur.right:
+                        path.append((cur,False))
+                        cur.right
+                    else:
+                        break
+                t.val = cur.val
+                return path
+            else:
+                m = cur
+                t.val = m.val
+                t.left = m.left
+                return [(m, True)]
+        else:
+            cur = t.right
+            if cur.left:         
+                while True:
+                    if cur.left:
+                        path.append((cur,True))
+                        cur.left
+                    else:
+                        break
+                t.val = cur.val
+                return path
+            else:
+                m = cur
+                t.val = m.val
+                t.right = m.right
+                return [(m,False)]
         ### END SOLUTION
 
     def add(self, val):
         assert(val not in self)
         ### BEGIN SOLUTION
+        # check not first
+        if self.root == None:
+            self.root = self.Node(val,None,None)
+            pass
+        else:
+
+            path = []
+            cur = self.root
+
+            # create path to node and add node
+            while True:
+                if cur == None:
+                    if path[-1][1] == True:
+                        path[-1][0].left = self.Node(val,None,None)
+                    else:
+                        path[-1][0].right = self.Node(val,None,None)
+                    break
+                elif val < cur.val:
+                    path.append((cur, True))
+                    cur = cur.left
+                else:
+                    path.append((cur, False))
+                    cur = cur.right
+
+            # modify then check balance
+            for x in range(len(path)-1,-1,-1):
+                cur = path[x]
+                path[x][0].bl = path[x][0].height(cur[0].right) - path[x][0].height(cur[0].left)
+                # right heavy
+                if path[x][0].bl > 1:
+                    # if added node was added to the right nodes right tree
+                    if path[x+1][1] == False:
+                        path[x][0].rotate_left()
+                    else: # right nodes left tree
+                        path[x+1][0].rotate_right()
+                        path[x][0].rotate_left()
+                elif path[x][0].bl < -1:
+                    if path[x+1][1] == True:
+                        path[x][0].rotate_right()
+                    else: 
+                        path[x+1][0].rotate_left()
+                        path[x][0].rotate_right()
+
         ### END SOLUTION
 
     def __delitem__(self, val):
         assert(val in self)
         ### BEGIN SOLUTION
-        ### END SOLUTION
+        if self.root.left == None and self.root.right == None:
+            self.root = None
+        elif self.root.val == val:
+            if self.root.bf == -1:
+                n = self.root.left
+                self.root.val, n.val = n.val, self.root.val
+                self.root.left, n.left, self.root.right, n.right = n.left, n.right, n, self.root.right
+            else:
+                n = self.root.right
+                self.root.val, n.val = n.val, self.root.val
+                self.root.right, n.right, self.root.left, n.left = n.right, n.left, n, self.root.left
+        else:
+            path = []
+            cur = self.root
 
+            # create path to node
+            while True:
+                if cur.val == val:
+                    break
+                elif val < cur.val:
+                    path.append((cur, True))
+                    cur = cur.left
+                else:
+                    path.append((cur, False))
+                    cur = cur.right
+                
+            # down the chain
+            path2 = []
+            pre = None
+            if path[-1][1] == True:
+                cur = path[-1][0].left
+                if cur.left == None:
+                    if cur.right == None:
+                        path[-1][0].left = None
+                    else:
+                        path[-1][0].left = cur.right
+                elif cur.right == None:
+                    path[-1][0].left = cur.left
+                else:
+                    path = path + self.helpdel(path[-1][0].left)
+                        
+            else:
+                cur = path[-1][0].right
+                if cur.left == None:
+                    if cur.right == None:
+                        path[-1][0].right = None
+                    else:
+                        path[-1][0].right = cur.right
+                elif cur.right == None:
+                    path[-1][0].right = cur.left
+                else:
+                    path = path + self.helpdel(path[-1][0].right)
+
+
+            # modify then check balance up
+            for x in range(len(path)-1,-1,-1):
+                cur = path[x]
+                path[x][0].bl = path[x][0].height(cur[0].right) - path[x][0].height(cur[0].left)
+
+                # right heavy
+                if path[x][0].bl > 1:
+                    path[x][0].rotate_left()
+                elif path[x][0].bl < -1:
+                    path[x][0].rotate_right()
+        ### END SOLUTION
+ 
     def __contains__(self, val):
         def contains_rec(node):
             if not node:
@@ -173,8 +317,10 @@ def test_key_order_after_ops():
         t.add(x)
 
     for _ in range(len(vals) // 3):
+        #print("dek")
         to_rem = vals.pop(random.randrange(len(vals)))
         del t[to_rem]
+        
 
     vals.sort()
 
@@ -222,16 +368,25 @@ def say_success():
 # MAIN
 ################################################################################
 def main():
-    for t in [test_ll_fix_simple,
-              test_rr_fix_simple,
-              test_lr_fix_simple,
-              test_rl_fix_simple,
-              test_key_order_after_ops,
-              test_stress_testing]:
-        say_test(t)
-        t()
-        say_success()
-    print(80 * "#" + "\nALL TEST CASES FINISHED SUCCESSFULLY!\n" + 80 * "#")
+    m = AVLTree()
+
+    for x in range(23):
+        m.add(x)
+    m.pprint()
+    del m[11]
+    m.pprint()
+    
+
+    #for t in [test_ll_fix_simple,
+    #          test_rr_fix_simple,
+     #         test_lr_fix_simple,
+     #         test_rl_fix_simple,
+     #         test_key_order_after_ops,
+     #         test_stress_testing]:
+    #    say_test(t)
+      #  t()
+     #   say_success()
+    #print(80 * "#" + "\nALL TEST CASES FINISHED SUCCESSFULLY!\n" + 80 * "#")
 
 if __name__ == '__main__':
     main()
